@@ -1,12 +1,18 @@
 package org.jsoup.parser;
 
-import org.jsoup.helper.StringUtil;
-import org.jsoup.helper.Validate;
-import org.jsoup.nodes.*;
-import org.jsoup.select.Elements;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jsoup.helper.StringUtil;
+import org.jsoup.helper.Validate;
+import org.jsoup.nodes.Comment;
+import org.jsoup.nodes.DataNode;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.FormElement;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
 
 /**
  * HTML Tree Builder; creates a DOM from Tokens.
@@ -183,12 +189,14 @@ public class HtmlTreeBuilder extends TreeBuilder {
         }
         
         Element el = new Element(Tag.valueOf(startTag.name(), settings), baseUri, settings.normalizeAttributes(startTag.attributes));
+        el.setSourcePosition(tokeniser.sourcePosition());
         insert(el);
         return el;
     }
 
     Element insertStartTag(String startTagName) {
         Element el = new Element(Tag.valueOf(startTagName, settings), baseUri);
+        el.setSourcePosition(tokeniser.sourcePosition());
         insert(el);
         return el;
     }
@@ -201,6 +209,7 @@ public class HtmlTreeBuilder extends TreeBuilder {
     Element insertEmpty(Token.StartTag startTag) {
         Tag tag = Tag.valueOf(startTag.name(), settings);
         Element el = new Element(tag, baseUri, startTag.attributes);
+        el.setSourcePosition(tokeniser.sourcePosition());
         insertNode(el);
         if (startTag.isSelfClosing()) {
             if (tag.isKnownTag()) {
@@ -217,6 +226,7 @@ public class HtmlTreeBuilder extends TreeBuilder {
     FormElement insertForm(Token.StartTag startTag, boolean onStack) {
         Tag tag = Tag.valueOf(startTag.name(), settings);
         FormElement el = new FormElement(tag, baseUri, startTag.attributes);
+        el.setSourcePosition(tokeniser.sourcePosition());
         setFormElement(el);
         insertNode(el);
         if (onStack)
@@ -226,6 +236,7 @@ public class HtmlTreeBuilder extends TreeBuilder {
 
     void insert(Token.Comment commentToken) {
         Comment comment = new Comment(commentToken.getData(), baseUri);
+        comment.setSourcePosition(tokeniser.sourcePosition());
         insertNode(comment);
     }
 
@@ -237,6 +248,7 @@ public class HtmlTreeBuilder extends TreeBuilder {
             node = new DataNode(characterToken.getData(), baseUri);
         else
             node = new TextNode(characterToken.getData(), baseUri);
+        node.setSourcePosition(tokeniser.sourcePosition());
         currentElement().appendChild(node); // doesn't use insertNode, because we don't foster these; and will always have a stack.
     }
 
@@ -246,8 +258,9 @@ public class HtmlTreeBuilder extends TreeBuilder {
             doc.appendChild(node);
         else if (isFosterInserts())
             insertInFosterParent(node);
-        else
+        else {
             currentElement().appendChild(node);
+        }
 
         // connect form controls to their form element
         if (node instanceof Element && ((Element) node).tag().isFormListed()) {

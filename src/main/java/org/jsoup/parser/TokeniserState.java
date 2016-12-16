@@ -1,8 +1,8 @@
 package org.jsoup.parser;
 
-import org.jsoup.nodes.DocumentType;
-
 import java.util.Arrays;
+
+import org.jsoup.nodes.DocumentType;
 
 /**
  * States and transition activations for the Tokeniser.

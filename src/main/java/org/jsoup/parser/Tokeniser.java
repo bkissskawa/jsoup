@@ -1,9 +1,10 @@
 package org.jsoup.parser;
 
+import java.util.Arrays;
+
+import org.jsoup.helper.CharacterInterval;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Entities;
-
-import java.util.Arrays;
 
 /**
  * Readers the input stream into tokens.
@@ -25,6 +26,8 @@ final class Tokeniser {
     private String charsString = null; // characters pending an emit. Will fall to charsBuilder if more than one
     private StringBuilder charsBuilder = new StringBuilder(1024); // buffers characters to output as one token, if more than one emit per read
     StringBuilder dataBuffer = new StringBuilder(1024); // buffers data looking for </script>
+    private int startPos;
+    int endPos;
 
     Token.Tag tagPending; // tag we are building up
     Token.StartTag startPending = new Token.StartTag();
@@ -40,6 +43,10 @@ final class Tokeniser {
         this.errors = errors;
     }
 
+    CharacterInterval sourcePosition() {
+        return new CharacterInterval(startPos, endPos);
+    }
+
     Token read() {
         if (!selfClosingFlagAcknowledged) {
             error("Self closing flag not acknowledged");
@@ -49,18 +56,26 @@ final class Tokeniser {
         while (!isEmitPending)
             state.read(this, reader);
 
+        endPos = reader.pos();
+        if (charsString != null)
+            endPos = startPos + charsString.length();
+
         // if emit is pending, a non-character token was found: return any chars in buffer, and leave token for next read:
         if (charsBuilder.length() > 0) {
             String str = charsBuilder.toString();
             charsBuilder.delete(0, charsBuilder.length());
             charsString = null;
+            charPending.sourcePosition = new CharacterInterval(startPos, endPos);
             return charPending.data(str);
         } else if (charsString != null) {
             Token token = charPending.data(charsString);
+            token.sourcePosition = new CharacterInterval(startPos, endPos);
             charsString = null;
             return token;
         } else {
             isEmitPending = false;
+            endPos = reader.pos();
+            emitPending.sourcePosition = new CharacterInterval(startPos, endPos);
             return emitPending;
         }
     }
@@ -81,6 +96,7 @@ final class Tokeniser {
             if (endTag.attributes != null)
                 error("Attributes incorrectly present on end tag");
         }
+        startPos = endPos;
     }
 
     void emit(final String str) {

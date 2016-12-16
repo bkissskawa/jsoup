@@ -1,5 +1,6 @@
 package org.jsoup.parser;
 
+import org.jsoup.helper.CharacterInterval;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
@@ -9,6 +10,7 @@ import org.jsoup.nodes.BooleanAttribute;
  * Parse tokens for the Tokeniser.
  */
 abstract class Token {
+    CharacterInterval sourcePosition;
     TokenType type;
 
     private Token() {
@@ -48,6 +50,7 @@ abstract class Token {
             reset(publicIdentifier);
             reset(systemIdentifier);
             forceQuirks = false;
+            sourcePosition = null;
             return this;
         }
 
@@ -94,6 +97,7 @@ abstract class Token {
             hasPendingAttributeValue = false;
             selfClosing = false;
             attributes = null;
+            sourcePosition = null;
             return this;
         }
 
@@ -240,7 +244,7 @@ abstract class Token {
         }
     }
 
-    final static class EndTag extends Tag{
+    final static class EndTag extends Tag {
         EndTag() {
             super();
             type = TokenType.EndTag;

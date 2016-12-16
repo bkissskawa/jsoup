@@ -1,13 +1,15 @@
 package org.jsoup.safety;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import org.jsoup.Jsoup;
 import org.jsoup.TextUtil;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  Tests for the cleaner.

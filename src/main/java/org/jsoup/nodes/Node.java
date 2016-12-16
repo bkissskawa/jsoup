@@ -1,17 +1,18 @@
 package org.jsoup.nodes;
 
-import org.jsoup.SerializationException;
-import org.jsoup.helper.StringUtil;
-import org.jsoup.helper.Validate;
-import org.jsoup.parser.Parser;
-import org.jsoup.select.NodeTraversor;
-import org.jsoup.select.NodeVisitor;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.jsoup.SerializationException;
+import org.jsoup.helper.CharacterInterval;
+import org.jsoup.helper.StringUtil;
+import org.jsoup.helper.Validate;
+import org.jsoup.parser.Parser;
+import org.jsoup.select.NodeTraversor;
+import org.jsoup.select.NodeVisitor;
 
 /**
  The base, abstract Node model. Elements, Documents, Comments etc are all Node instances.
@@ -24,6 +25,7 @@ public abstract class Node implements Cloneable {
     Attributes attributes;
     String baseUri;
     int siblingIndex;
+    CharacterInterval sourcePosition;
 
     /**
      Create a new Node.
@@ -56,6 +58,14 @@ public abstract class Node implements Cloneable {
      @return node name
      */
     public abstract String nodeName();
+
+    public CharacterInterval sourcePosition() {
+        return this.sourcePosition;
+    }
+
+    public void setSourcePosition(CharacterInterval position) {
+        this.sourcePosition = position;
+    }
 
     /**
      * Get an attribute's value by its key. <b>Case insensitive</b>

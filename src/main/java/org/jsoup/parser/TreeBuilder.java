@@ -1,11 +1,12 @@
 package org.jsoup.parser;
 
+import java.util.ArrayList;
+
+import org.jsoup.helper.CharacterInterval;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
-import java.util.ArrayList;
 
 /**
  * @author Jonathan Hedley
@@ -47,6 +48,25 @@ abstract class TreeBuilder {
     protected void runParser() {
         while (true) {
             Token token = tokeniser.read();
+            if (token.isEndTag()) {
+                for (int i= stack.size()-1; i>=0; --i) {
+                    Element e = stack.get(i);
+
+                    if (!e.nodeName().equals(token.asEndTag().tagName))
+                        continue;
+
+                    int start = e.sourcePosition() == null
+                            ? token.sourcePosition.getStartPos()
+                            : e.sourcePosition().getStartPos();
+                    e.setSourcePosition(
+                            new CharacterInterval(
+                                    start,
+                                    token.sourcePosition.getEndPos()
+                            )
+                    );
+                    break;
+                }
+            }
             process(token);
             token.reset();
 
