@@ -2,7 +2,7 @@ package org.jsoup.parser;
 
 import java.util.ArrayList;
 
-import org.jsoup.helper.CharacterInterval;
+import org.jsoup.helper.Interval;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
@@ -56,12 +56,12 @@ abstract class TreeBuilder {
                         continue;
 
                     int start = e.sourcePosition() == null
-                            ? token.sourcePosition.getStartPos()
-                            : e.sourcePosition().getStartPos();
+                            ? token.sourcePosition.getStart()
+                            : e.sourcePosition().getStart();
                     e.setSourcePosition(
-                            new CharacterInterval(
+                            new Interval(
                                     start,
-                                    token.sourcePosition.getEndPos()
+                                    token.sourcePosition.getEnd()
                             )
                     );
                     break;

@@ -1,19 +1,25 @@
 package org.jsoup.parser;
 
-import org.jsoup.Jsoup;
-import org.jsoup.TextUtil;
-import org.jsoup.helper.StringUtil;
-import org.jsoup.integration.ParseTest;
-import org.jsoup.nodes.*;
-import org.jsoup.select.Elements;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.jsoup.Jsoup;
+import org.jsoup.TextUtil;
+import org.jsoup.helper.StringUtil;
+import org.jsoup.integration.ParseTest;
+import org.jsoup.nodes.Comment;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities;
+import org.jsoup.nodes.FormElement;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
+import org.junit.Test;
 
 /**
  Tests for the Parser
@@ -940,5 +946,32 @@ public class HtmlParserTest {
         parser.settings(new ParseSettings(true, true));
         Document doc = parser.parseInput("<div id=1><SPAN ID=2>", "");
         assertEquals("<html> <head></head> <body> <div id=\"1\"> <SPAN ID=\"2\"></SPAN> </div> </body> </html>", StringUtil.normaliseWhitespace(doc.outerHtml()));
+    }
+
+    @Test
+    public void testTagSourcePosition() throws Exception {
+        String html = "<html><head><title>Get interval!</title></head><body><p class=\"active\">Where am I?</p>" +
+                "<input type=\"text\" value=\"hello\"/>" +
+                "<div><div><p>Hello, <strong>here</strong> I am.</p></div></div>" +
+                "<div><span>Hi</span><span></span></div>" +
+                "</body></html>";
+        Document doc = Jsoup.parse(html);
+        Element p = doc.body().child(0);
+
+        assertTrue(p.sourcePosition() != null);
+        assertEquals("<p class=\"active\">Where am I?</p>", source(html, p));
+
+        Element input = doc.body().child(1);
+        assertEquals("<input type=\"text\" value=\"hello\"/>", source(html, input));
+
+        Element div = doc.body().child(2);
+        assertEquals("<div><div><p>Hello, <strong>here</strong> I am.</p></div></div>", source(html, div));
+
+        Element body = doc.body();
+        assertEquals("<body><p class=\"active\">Where am I?</p><input type=\"text\" value=\"hello\"/><div><div><p>Hello, <strong>here</strong> I am.</p></div></div><div><span>Hi</span><span></span></div></body>", source(html, body));
+    }
+
+    private String source(String s, Element e) {
+        return s.substring(e.sourcePosition().getStart(), e.sourcePosition().getEnd());
     }
 }

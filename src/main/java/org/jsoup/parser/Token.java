@@ -1,6 +1,6 @@
 package org.jsoup.parser;
 
-import org.jsoup.helper.CharacterInterval;
+import org.jsoup.helper.Interval;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
@@ -10,7 +10,7 @@ import org.jsoup.nodes.BooleanAttribute;
  * Parse tokens for the Tokeniser.
  */
 abstract class Token {
-    CharacterInterval sourcePosition;
+    Interval sourcePosition;
     TokenType type;
 
     private Token() {

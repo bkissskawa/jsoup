@@ -2,7 +2,7 @@ package org.jsoup.parser;
 
 import java.util.Arrays;
 
-import org.jsoup.helper.CharacterInterval;
+import org.jsoup.helper.Interval;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Entities;
 
@@ -27,7 +27,7 @@ final class Tokeniser {
     private StringBuilder charsBuilder = new StringBuilder(1024); // buffers characters to output as one token, if more than one emit per read
     StringBuilder dataBuffer = new StringBuilder(1024); // buffers data looking for </script>
     private int startPos;
-    int endPos;
+    private int endPos;
 
     Token.Tag tagPending; // tag we are building up
     Token.StartTag startPending = new Token.StartTag();
@@ -43,8 +43,8 @@ final class Tokeniser {
         this.errors = errors;
     }
 
-    CharacterInterval sourcePosition() {
-        return new CharacterInterval(startPos, endPos);
+    Interval sourcePosition() {
+        return new Interval(startPos, endPos);
     }
 
     Token read() {
@@ -65,17 +65,17 @@ final class Tokeniser {
             String str = charsBuilder.toString();
             charsBuilder.delete(0, charsBuilder.length());
             charsString = null;
-            charPending.sourcePosition = new CharacterInterval(startPos, endPos);
+            charPending.sourcePosition = new Interval(startPos, endPos);
             return charPending.data(str);
         } else if (charsString != null) {
             Token token = charPending.data(charsString);
-            token.sourcePosition = new CharacterInterval(startPos, endPos);
+            token.sourcePosition = new Interval(startPos, endPos);
             charsString = null;
             return token;
         } else {
             isEmitPending = false;
             endPos = reader.pos();
-            emitPending.sourcePosition = new CharacterInterval(startPos, endPos);
+            emitPending.sourcePosition = new Interval(startPos, endPos);
             return emitPending;
         }
     }

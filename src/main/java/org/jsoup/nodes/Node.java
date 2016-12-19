@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jsoup.SerializationException;
-import org.jsoup.helper.CharacterInterval;
+import org.jsoup.helper.Interval;
 import org.jsoup.helper.StringUtil;
 import org.jsoup.helper.Validate;
 import org.jsoup.parser.Parser;
@@ -25,7 +25,7 @@ public abstract class Node implements Cloneable {
     Attributes attributes;
     String baseUri;
     int siblingIndex;
-    CharacterInterval sourcePosition;
+    Interval sourcePosition;
 
     /**
      Create a new Node.
@@ -59,11 +59,11 @@ public abstract class Node implements Cloneable {
      */
     public abstract String nodeName();
 
-    public CharacterInterval sourcePosition() {
+    public Interval sourcePosition() {
         return this.sourcePosition;
     }
 
-    public void setSourcePosition(CharacterInterval position) {
+    public void setSourcePosition(Interval position) {
         this.sourcePosition = position;
     }
 
