@@ -1,6 +1,10 @@
 package org.jsoup.helper;
 
-public class Interval {
+import java.io.Serializable;
+
+public class Interval implements Serializable {
+
+	private static final long serialVersionUID = -4097535626745467100L;
 
 	private final int start;
 	private final int end;
